@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download
+        uses: actions/download-artifact@v4
+
+      - name: Get SSL Version
+        run: echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
+
+      - name: Delete Previous Release
+        run: |
+          gh release delete "v${{ env.SSL_VERSION }}" --repo "${{ github.repository }}" --cleanup-tag -y
+          sleep 5
+        env:
+          GH_TOKEN: "${{ github.token }}"
+        continue-on-error: true
+
+      - name: Release
+        uses: softprops/action-gh-release@v2.3.2
+        with:
+          body: "OpenSSL ${{ env.SSL_VERSION }}"
+          name: OpenSSL ${{ env.SSL_VERSION }}
+          tag_name: v${{ env.SSL_VERSION }}
+          files: |
+            windows/*.tar.zst*
+            android/*.tar.zst*
+          make_latest: true
