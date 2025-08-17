@@ -91,7 +91,7 @@ jobs:
 
       - name: Build (Solaris)
         if: matrix.platform == 'solaris'
-        uses: vmactions/solaris-vm@
+        uses: vmactions/solaris-vm@v1.1.4
         with:
           usesh: true
           envs: 'PLATFORM SSL_VERSION'
@@ -104,7 +104,7 @@ jobs:
 
       - name: Build (FreeBSD)
         if: matrix.platform == 'freebsd'
-        uses: vmactions/solaris-vm@
+        uses: vmactions/solaris-vm@v1.2.2
         with:
           usesh: true
           envs: 'PLATFORM SSL_VERSION'
