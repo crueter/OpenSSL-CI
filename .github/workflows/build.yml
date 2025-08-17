@@ -112,10 +112,14 @@ jobs:
           envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
             pkg install -y wget perl5-5.40.2_2
-            
+
           run: |
+            echo $PWD
+            ls
+            echo
             echo $GITHUB_WORKSPACE
             cd $GITHUB_WORKSPACE
+            ls
             chmod a+x ./unix/build.sh
             ./unix/build.sh
 

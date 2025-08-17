@@ -10,6 +10,8 @@ set -x
 [ -z "$BUILD_TYPE" ] && BUILD_TYPE=no-asm
 [ -z "$PLATFORM" ] && PLATFORM=linux
 
+[ "$PLATFORM" == "solaris" ] && MAKE=gmake || MAKE=make
+
 get_qt_arch() {
     echo "arm64-v8a"
 }
@@ -26,7 +28,7 @@ configure_ssl() {
     ./Configure "${config_params[@]}" 2>&1 1>${log_file} | tee -a ${log_file} || exit 1
 
     echo "Making dependencies..."
-    make depend
+    $MAKE depend
 }
 
 build_ssl() {
@@ -34,7 +36,7 @@ build_ssl() {
 
     echo "Building..."
     export CL=" /MP"
-    make SHLIB_VERSION_NUMBER= build_libs -j$(nproc) 2>&1 1>>${log_file} \
+    $MAKE SHLIB_VERSION_NUMBER= build_libs -j$(nproc) 2>&1 1>>${log_file} \
         | tee -a ${log_file} || exit 1
 }
 
