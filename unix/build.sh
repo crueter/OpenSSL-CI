@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -x
 
 [ -z "$OUT_DIR" ] && OUT_DIR=$PWD/out
 

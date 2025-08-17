@@ -112,14 +112,12 @@ jobs:
           envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
             pkg install -y wget perl5-5.40.2_2
-
-      - name: Build (FreeBSD)
-        if: matrix.platform == 'freebsd'
-        run: |
-          echo $GITHUB_WORKSPACE
-          cd $GITHUB_WORKSPACE
-          chmod a+x ./unix/build.sh
-          ./unix/build.sh
+            
+          run: |
+            echo $GITHUB_WORKSPACE
+            cd $GITHUB_WORKSPACE
+            chmod a+x ./unix/build.sh
+            ./unix/build.sh
 
       - name: Build (Linux)
         if: matrix.platform == 'linux'
