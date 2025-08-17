@@ -96,7 +96,7 @@ jobs:
           usesh: true
           envs: 'PLATFORM SSL_VERSION'
           prepare: |
-            pkgutil -y -i perl-5 wget
+            pkgutil -y -i library/perl-5 wget
 
           run: |
             chmod a+x ./unix/build.sh
@@ -109,7 +109,8 @@ jobs:
           usesh: true
           envs: 'PLATFORM SSL_VERSION'
           prepare: |
-            pkg install -y wget perl5.34
+            pkg install -y wget
+            pkg_add -v -r perl
 
           run: |
             chmod a+x ./unix/build.sh
