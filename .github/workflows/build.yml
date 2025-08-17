@@ -27,7 +27,7 @@ jobs:
           7z x ../strawberry-perl-5.40.2.1-64bit-portable.zip
 
           #  I hate microsoft
-          PERL_PATH="$PWD/strawberry/perl"
+          PERL_PATH="$PWD/perl"
           echo "PERL_BIN=$PERL_PATH/bin" >> $GITHUB_ENV
           echo "PERL5LIB=$PERL_PATH/vendor/lib;$PERL_PATH/lib" >> $GITHUB_ENV
 
@@ -109,7 +109,7 @@ jobs:
           usesh: true
           envs: 'PLATFORM SSL_VERSION'
           prepare: |
-            pkginstall -y wget perl5.34
+            pkg install -y wget perl-5.10.1
 
           run: |
             chmod a+x ./unix/build.sh
