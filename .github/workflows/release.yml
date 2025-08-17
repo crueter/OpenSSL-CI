@@ -5,8 +5,6 @@ on:
     - cron: "0 0 * * 1"
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
 
 permissions:
@@ -46,4 +44,8 @@ jobs:
           files: |
             windows/*.tar.zst*
             android/*.tar.zst*
+            solaris/*.tar.zst*
+            freebsd/*.tar.zst*
+            linux/*.tar.zst*
+
           make_latest: true

@@ -4,18 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  build:
-    runs-on: ${{ matrix.runs-on }}
-    strategy:
-      fail-fast: false
-
-      matrix:
-        include:
-          - runs-on: ubuntu-latest
-            os: "android"
-          - runs-on: windows-latest
-            os: "windows"
-
+  windows:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -24,15 +14,12 @@ jobs:
         run: echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
 
       - uses: ilammy/msvc-dev-cmd@v1
-        if: runner.os == 'Windows'
 
       - name: Install wget
-        if: runner.os == 'Windows'
         run: choco install wget
 
       - name: Setup perl
         shell: bash
-        if: runner.os == 'Windows'
         run: |
           wget https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54021_64bit_UCRT/strawberry-perl-5.40.2.1-64bit-portable.zip
           mkdir strawberry
@@ -40,29 +27,102 @@ jobs:
           7z x ../strawberry-perl-5.40.2.1-64bit-portable.zip
 
           #  I hate microsoft
-          PERL_PATH="/d/a/OpenSSL-CI/OpenSSL-CI/strawberry/perl"
+          PERL_PATH="$PWD/strawberry/perl"
           echo "PERL_BIN=$PERL_PATH/bin" >> $GITHUB_ENV
           echo "PERL5LIB=$PERL_PATH/vendor/lib;$PERL_PATH/lib" >> $GITHUB_ENV
 
           ls $PERL_PATH/lib
 
-      - name: Build (Windows)
-        if: runner.os == 'Windows'
+      - name: Build
         shell: bash
         run: |
           export PATH="$PERL_BIN:$PATH"
-          chmod a+x ./${{ matrix.os }}/build.sh
-          ./${{ matrix.os }}/build.sh
-
-      - name: Build (Android)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          chmod a+x ./${{ matrix.os }}/build.sh
-          ./${{ matrix.os }}/build.sh
+          chmod a+x ./windows/build.sh
+          ./windows/build.sh
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}
+          name: windows
+          path: artifacts/*
+
+  android:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get SSL Version
+        shell: bash
+        run: echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
+
+      - name: Build
+        shell: bash
+        run: |
+          chmod a+x ./android/build.sh
+          ./android/build.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: artifacts/*
+
+  unix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: solaris
+          - platform: freebsd
+          - platform: linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get SSL Version and Set Environment
+        shell: bash
+        run: |
+          echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
+          echo "PLATFORM=${{ matrix.platform }}" >> $GITHUB_ENV
+
+      - name: Build (Solaris)
+        if: matrix.platform == 'solaris'
+        uses: vmactions/solaris-vm@
+        with:
+          usesh: true
+          envs: 'PLATFORM SSL_VERSION'
+          prepare: |
+            pkgutil -y -i perl-540 wget
+
+          run: |
+            chmod a+x ./unix/build.sh
+            ./unix/build.sh
+
+      - name: Build (FreeBSD)
+        if: matrix.platform == 'freebsd'
+        uses: vmactions/solaris-vm@
+        with:
+          usesh: true
+          envs: 'PLATFORM SSL_VERSION'
+          prepare: |
+            pkginstall -y wget perl5.34
+
+          run: |
+            chmod a+x ./unix/build.sh
+            ./unix/build.sh
+
+      - name: Build (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          chmod a+x ./unix/build.sh
+          ./unix/build.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
           path: artifacts/*
