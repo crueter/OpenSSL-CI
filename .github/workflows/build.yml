@@ -94,11 +94,12 @@ jobs:
         uses: vmactions/solaris-vm@v1.1.4
         with:
           usesh: true
-          envs: 'PLATFORM SSL_VERSION'
+          envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
-            pkgutil -y -i perl-5.10.1 wget
+            pkgutil -y -i perl wget
 
           run: |
+            cd $GITHUB_WORKSPACE
             chmod a+x ./unix/build.sh
             ./unix/build.sh
 
@@ -107,11 +108,12 @@ jobs:
         uses: vmactions/freebsd-vm@v1.2.2
         with:
           usesh: true
-          envs: 'PLATFORM SSL_VERSION'
+          envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
             pkg install -y wget perl5-5.40.2_2
 
           run: |
+            cd $GITHUB_WORKSPACE
             chmod a+x ./unix/build.sh
             ./unix/build.sh
 
