@@ -9,9 +9,11 @@ jobs:
     outputs:
       ssl_version: ${{ steps.get-version.outputs.SSL_VERSION }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: Grab SSL Version
         id: get-version
-        run: echo "SSL_VERSION=$(.tools/openssl-version.sh)" >> $GITHUB_OUTPUT
+        run: echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_OUTPUT
   
   windows:
     needs: [version]
