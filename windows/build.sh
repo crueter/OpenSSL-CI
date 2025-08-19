@@ -9,15 +9,20 @@ set -e
 [ -z "$BUILD_DIR" ] && BUILD_DIR=build
 [ -z "$BUILD_TYPE" ] && BUILD_TYPE=no-asm
 
-get_qt_arch() {
-    echo "arm64-v8a"
-}
-
 configure_ssl() {
     log_file=$1
 
-    # TODO(crueter): arm
-    config_params=( "${BUILD_TYPE}" "no-shared" "VC-WIN32" "no-makedepend" "--release")
+    # TODO(crueter): win32/win64 split for amd64
+    case "$ARCH" in
+        (amd64|x86|x64|x86_64)
+            TARGET="VC-WIN32"
+            ;;
+        (aarch64|arm|arm64)
+            TARGET="VC-WIN64-ARM"
+            ;;
+    esac
+
+    config_params=( "${BUILD_TYPE}" "no-shared" "$TARGET" "no-makedepend" "--release")
 
     echo "Configuring OpenSSL $SSL_VERSION"
     echo "Configure parameters: ${config_params[@]}"
@@ -37,6 +42,11 @@ build_ssl() {
         | tee -a ${log_file} || exit 1
 }
 
+strip_libs() {
+    find . -name "libcrypto*.dll" -exec llvm-strip --strip-all {} \;
+    find . -name "libssl*.dll" -exec llvm-strip --strip-all {} \;
+}
+
 copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
@@ -53,7 +63,7 @@ package() {
     echo "Packaging..."
     mkdir -p "$ROOTDIR/artifacts"
 
-    TARBALL=openssl-windows-$SSL_VERSION.tar
+    TARBALL=openssl-windows-$ARCH-$SSL_VERSION.tar
 
     cd "$OUT_DIR"
     tar cf $ROOTDIR/artifacts/$TARBALL *
@@ -67,7 +77,7 @@ package() {
 
 ROOTDIR=$PWD
 
-[ ! -f openssl-$SSL_VERSION.tar.gz ] && wget https://github.com/openssl/openssl/releases/download/openssl-$SSL_VERSION/openssl-$SSL_VERSION.tar.gz
+./tools/download-openssl.sh
 
 [[ -e "$BUILD_DIR" ]] && rm -fr "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
@@ -88,6 +98,7 @@ rm -fr "$OUT_DIR"
 mkdir -p "$OUT_DIR" || exit 1
 
 build_ssl ${log_file}
+strip_libs
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then
