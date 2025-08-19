@@ -34,11 +34,9 @@ build_ssl() {
 }
 
 strip_libs() {
-    find . -name "libcrypto*.so" -or -name "libcrypto*.a" -exec strip {} \;
-    find . -name "libssl*.so" -or -name "libssl*.a" -exec strip {} \;
-    find . -name "libssl*.a" -exec ranlib {} \;
-    find . -name "libcrypto*.a" -exec ranlib {} \;
-}
+    find . -name "libcrypto*.so" -exec strip {} \;
+    find . -name "libssl*.so" -exec strip {} \;
+    }
 
 copy_build_artifacts() {
     echo "Copying artifacts..."
@@ -99,8 +97,8 @@ if [ ! -d "$OUT_DIR/include" ]; then
 fi
 
 # Clean include folder
-find "$OUT_DIR/" -name "*.in" -delete
-find "$OUT_DIR/" -name "*.def" -delete
+find "$OUT_DIR/" -name "*.in" -exec rm -f {} \;
+find "$OUT_DIR/" -name "*.def" -exec rm -f {} \;
 
 copy_cmake
 package

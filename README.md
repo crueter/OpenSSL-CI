@@ -1,6 +1,6 @@
 # OpenSSL CI
 
-Scripts and CI for CMake-compatible OpenSSL 3.5.2 on Windows (amd64) and Android.
+Scripts and CI for CMake-compatible OpenSSL 3.5.2 on Windows (amd64, arm64), UNIX (amd64, Solaris, FreeBSD, Linux) and Android (aarch64).
 
 [**Releases**](https://github.com/crueter/OpenSSL-CI/releases)
 
@@ -65,6 +65,6 @@ Windows only builds static libraries, and will always be linked as such.
 
 ### Unix
 
-Unix builds are tested on Linux, FreeBSD, and Solaris, and should "just work" out of the box. To change your platform (only affects the artifact name), set the `PLATFORM` environment variable.
+Unix builds are tested on Linux, FreeBSD, and Solaris (gcc64), and should "just work" out of the box. To change your platform (only affects the artifact name), set the `PLATFORM` environment variable.
 
 Unix builds both shared and static libraries by default. You can control this with the `BUILD_SHARED_LIBS` CMake variable.
