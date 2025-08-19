@@ -43,8 +43,10 @@ build_ssl() {
 }
 
 strip_libs() {
-    find . -name "libcrypto*.so" -exec llvm-strip --strip-all {} \;
-    find . -name "libssl*.so" -exec llvm-strip --strip-all {} \;
+    find . -name "libcrypto*.so" -or -name "libcrypto*.a" -exec llvm-strip --strip-all {} \;
+    find . -name "libssl*.so" -or -name "libssl*.a" -exec llvm-strip --strip-all {} \;
+    find . -name "libssl*.a" -exec llvm-ranlib {} \;
+    find . -name "libcrypto*.a" -exec llvm-ranlib {} \;
 }
 
 copy_build_artifacts() {

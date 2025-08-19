@@ -42,6 +42,11 @@ build_ssl() {
         | tee -a ${log_file} || exit 1
 }
 
+strip_libs() {
+    find . -name "libcrypto*.dll" -exec llvm-strip --strip-all {} \;
+    find . -name "libssl*.dll" -exec llvm-strip --strip-all {} \;
+}
+
 copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
@@ -93,6 +98,7 @@ rm -fr "$OUT_DIR"
 mkdir -p "$OUT_DIR" || exit 1
 
 build_ssl ${log_file}
+strip_libs
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then

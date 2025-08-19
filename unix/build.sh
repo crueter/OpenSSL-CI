@@ -33,6 +33,13 @@ build_ssl() {
         | tee -a ${log_file} || exit 1
 }
 
+strip_libs() {
+    find . -name "libcrypto*.so" -or -name "libcrypto*.a" -exec strip {} \;
+    find . -name "libssl*.so" -or -name "libssl*.a" -exec strip {} \;
+    find . -name "libssl*.a" -exec ranlib {} \;
+    find . -name "libcrypto*.a" -exec ranlib {} \;
+}
+
 copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
@@ -84,6 +91,7 @@ rm -fr "$OUT_DIR"
 mkdir -p "$OUT_DIR" || exit 1
 
 build_ssl ${log_file}
+strip_libs
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then

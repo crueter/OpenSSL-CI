@@ -10,5 +10,7 @@ while true; do
        wget https://github.com/openssl/openssl/releases/download/openssl-$SSL_VERSION/openssl-$SSL_VERSION.tar.gz && exit 0
        echo "Download failed, trying again in 5 seconds..."
        sleep 5
-   fi
+    else
+        exit 0
+    fi
 done
