@@ -93,6 +93,7 @@ jobs:
         if: matrix.platform == 'solaris'
         uses: vmactions/solaris-vm@v1.1.4
         with:
+          release: "11.4-gcc"
           usesh: true
           envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
@@ -100,28 +101,22 @@ jobs:
             pkgutil -U -y tar
 
           run: |
-            cd $GITHUB_WORKSPACE
             chmod a+x ./unix/build.sh
             ./unix/build.sh
 
-      - name: Setup VM (FreeBSD)
+      - name: Build (FreeBSD)
         if: matrix.platform == 'freebsd'
         uses: vmactions/freebsd-vm@v1.2.2
         with:
           usesh: true
           envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
-            pkg install -y wget perl5-5.40.2_2
+            pkg install -y wget perl5-5.40.2_2 bash
 
           run: |
-            echo $PWD
-            ls
-            echo
-            echo $GITHUB_WORKSPACE
-            cd $GITHUB_WORKSPACE
-            ls
+            ls unix
             chmod a+x ./unix/build.sh
-            ./unix/build.sh
+            bash unix/build.sh
 
       - name: Build (Linux)
         if: matrix.platform == 'linux'
