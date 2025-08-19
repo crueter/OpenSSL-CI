@@ -63,7 +63,7 @@ package() {
 
 ROOTDIR=$PWD
 
-[ ! -f openssl-$SSL_VERSION.tar.gz ] && wget https://github.com/openssl/openssl/releases/download/openssl-$SSL_VERSION/openssl-$SSL_VERSION.tar.gz
+./tools/download-openssl.sh
 
 [[ -e "$BUILD_DIR" ]] && rm -fr "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
