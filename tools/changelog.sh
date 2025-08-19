@@ -10,7 +10,7 @@ artifact() {
   NAME="$1"
   ARTIFACT="$2"
 
-  BASE_URL="${BASE_DOWNLOAD_URL}/${TAG}/openssl-${ARTIFACT}.tar.zst"
+  BASE_URL="${BASE_DOWNLOAD_URL}/${TAG}/openssl-${ARTIFACT}-${SSL_VERSION}.tar.zst"
 
   echo -n "| "
   echo -n "[$NAME]($BASE_URL) | "
