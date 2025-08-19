@@ -55,7 +55,7 @@ copy_build_artifacts() {
 
 copy_cmake() {
     cp $ROOTDIR/CMakeLists.txt "$OUT_DIR"
-    cp $ROOTDIR/android/openssl.cmake "$OUT_DIR"
+    cat $ROOTDIR/unix/suffixes.cmake $ROOTDIR/libs.cmake > "$OUT_DIR/openssl.cmake"
 }
 
 package() {

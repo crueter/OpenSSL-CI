@@ -38,7 +38,7 @@ build_ssl() {
 
     echo "Building..."
     export CL=" /MP"
-    nmake SHLIB_VERSION_NUMBER= build_libs 2>&1 1>>${log_file} \
+    nmake build_libs 2>&1 1>>${log_file} \
         | tee -a ${log_file} || exit 1
 }
 
@@ -56,7 +56,7 @@ copy_build_artifacts() {
 
 copy_cmake() {
     cp $ROOTDIR/CMakeLists.txt "$OUT_DIR"
-    cp $ROOTDIR/windows/openssl.cmake "$OUT_DIR"
+    cat $ROOTDIR/windows/suffixes.cmake $ROOTDIR/libs.cmake > "$OUT_DIR/openssl.cmake"
 }
 
 package() {

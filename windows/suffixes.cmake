@@ -1,0 +1,2 @@
+set(SHARED_SUFFIX dll)
+set(STATIC_SUFFIX lib)

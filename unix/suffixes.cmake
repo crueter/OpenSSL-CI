@@ -1,0 +1,2 @@
+set(SHARED_SUFFIX so)
+set(STATIC_SUFFIX a)
