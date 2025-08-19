@@ -45,13 +45,15 @@ build_ssl() {
 strip_libs() {
     find . -name "libcrypto*.dll" -exec llvm-strip --strip-all {} \;
     find . -name "libssl*.dll" -exec llvm-strip --strip-all {} \;
+    find . -name "libcrypto*.lib" -exec llvm-strip --strip-all {} \;
+    find . -name "libssl*.lib" -exec llvm-strip --strip-all {} \;
 }
 
 copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
 
-    cp lib{ssl,crypto}.lib "$OUT_DIR/lib" || exit 1
+    cp lib{ssl,crypto}.{dll,lib} "$OUT_DIR/lib" || exit 1
 }
 
 copy_cmake() {
