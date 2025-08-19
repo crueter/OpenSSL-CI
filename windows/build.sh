@@ -12,10 +12,12 @@ set -e
 configure_ssl() {
     log_file=$1
 
-    # TODO(crueter): win32/win64 split for amd64
     case "$ARCH" in
-        (amd64|x86|x64|x86_64)
+        (x86)
             TARGET="VC-WIN32"
+            ;;
+        (amd64|x64|x86_64)
+            TARGET="VC-WIN64A"
             ;;
         (aarch64|arm|arm64)
             TARGET="VC-WIN64-ARM"
@@ -41,9 +43,10 @@ build_ssl() {
 
     # hacky crap caused by git bash
     TOOLSDIR=`cygpath -u "$VCToolsInstallDir"`
+    echo $TOOLSDIR
     export PATH="$TOOLSDIR/bin/Host${VSCMD_ARG_HOST_ARCH}/${VSCMD_ARG_TGT_ARCH}/:$PATH"
     nmake build_libs 2>&1 1>>${log_file} \
-        | tee -a ${log_file} || exit 1
+        | tee -a ${log_file} || (cat $log_file && exit 1)
 }
 
 copy_build_artifacts() {
