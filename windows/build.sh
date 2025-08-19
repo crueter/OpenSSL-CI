@@ -63,7 +63,7 @@ package() {
     echo "Packaging..."
     mkdir -p "$ROOTDIR/artifacts"
 
-    TARBALL=openssl-windows-$SSL_VERSION.tar
+    TARBALL=openssl-windows-$ARCH-$SSL_VERSION.tar
 
     cd "$OUT_DIR"
     tar cf $ROOTDIR/artifacts/$TARBALL *
