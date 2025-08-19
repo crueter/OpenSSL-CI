@@ -22,7 +22,7 @@ configure_ssl() {
             ;;
     esac
 
-    config_params=( "${BUILD_TYPE}" "shared" "$TARGET" "no-makedepend" "--release")
+    config_params=( "${BUILD_TYPE}" "no-shared" "$TARGET" "no-makedepend" "--release")
 
     echo "Configuring OpenSSL $SSL_VERSION"
     echo "Configure parameters: ${config_params[@]}"
@@ -46,7 +46,7 @@ copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
 
-    cp lib{ssl,crypto}.{dll,lib} "$OUT_DIR/lib" || exit 1
+    cp lib{ssl,crypto}.lib "$OUT_DIR/lib" || exit 1
 }
 
 copy_cmake() {
