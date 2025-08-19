@@ -36,7 +36,7 @@ build_ssl() {
 strip_libs() {
     find . -name "libcrypto*.so" -exec strip {} \;
     find . -name "libssl*.so" -exec strip {} \;
-    }
+}
 
 copy_build_artifacts() {
     echo "Copying artifacts..."

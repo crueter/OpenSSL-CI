@@ -35,10 +35,14 @@ jobs:
           GH_TOKEN: "${{ github.token }}"
         continue-on-error: true
 
+      - name: Generate Changelog
+        run: |
+          ./tools/changelog.sh > changelog.md
+
       - name: Release
         uses: softprops/action-gh-release@v2.3.2
         with:
-          body: "OpenSSL ${{ env.SSL_VERSION }}"
+          body_path: ./changelog.md
           name: OpenSSL ${{ env.SSL_VERSION }}
           tag_name: v${{ env.SSL_VERSION }}
           files: |
