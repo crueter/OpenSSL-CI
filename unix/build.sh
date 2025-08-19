@@ -94,7 +94,7 @@ build_ssl ${log_file}
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then
-    cp -p include "$OUT_DIR/" || exit 1
+    cp -p -R include "$OUT_DIR/" || exit 1
 fi
 
 # Clean include folder
