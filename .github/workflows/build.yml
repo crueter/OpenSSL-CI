@@ -4,14 +4,23 @@ on:
   workflow_call:
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      ssl_version: ${{ steps.get-version.outputs.SSL_VERSION }}
+    steps:
+      - name: Grab SSL Version
+        id: get-version
+        run: echo "SSL_VERSION=$(.tools/openssl-version.sh)" >> $GITHUB_OUTPUT
+  
   windows:
+    needs: [version]
     runs-on: windows-latest
+    env:
+      SSL_VERSION: ${{ needs.version.outputs.ssl_version }}
+
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get SSL Version
-        shell: bash
-        run: echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
 
       - uses: ilammy/msvc-dev-cmd@v1
 
@@ -47,16 +56,15 @@ jobs:
           path: artifacts/*
 
   android:
+    needs: [version]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+    env:
+      SSL_VERSION: ${{ needs.version.outputs.ssl_version }}
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get SSL Version
-        shell: bash
-        run: echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
 
       - name: Build
         shell: bash
@@ -71,6 +79,7 @@ jobs:
           path: artifacts/*
 
   unix:
+    needs: [version]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -80,14 +89,12 @@ jobs:
           - platform: freebsd
           - platform: linux
 
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      SSL_VERSION: ${{ needs.version.outputs.ssl_version }}
+
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get SSL Version and Set Environment
-        shell: bash
-        run: |
-          echo "SSL_VERSION=$(./tools/openssl-version.sh)" >> $GITHUB_ENV
-          echo "PLATFORM=${{ matrix.platform }}" >> $GITHUB_ENV
 
       - name: Build (Solaris)
         if: matrix.platform == 'solaris'

@@ -5,4 +5,7 @@
 
 API_URL=https://api.github.com/repos/openssl/openssl/releases/latest
 
-curl $API_URL | jq -r '.tag_name' | cut -d "-" -f2
+while true; do
+  VERSION=`curl $API_URL | jq -r '.tag_name' | cut -d "-" -f2`
+  [ "$VERSION" != "null" ] && echo "$VERSION" && exit 0
+done
