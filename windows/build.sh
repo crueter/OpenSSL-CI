@@ -50,8 +50,8 @@ copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
 
-    # mv libssl-*.dll libssl.dll
-    # mv libcrypto-*.dll libcrypto.dll
+    mv libssl-*.dll libssl.dll
+    mv libcrypto-*.dll libcrypto.dll
 
     cp lib{ssl,crypto}*.{dll,lib} "$OUT_DIR/lib" || exit 1
 }
@@ -81,25 +81,25 @@ ROOTDIR=$PWD
 
 ./tools/download-openssl.sh
 
-# [[ -e "$BUILD_DIR" ]] && rm -fr "$BUILD_DIR"
+[[ -e "$BUILD_DIR" ]] && rm -fr "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 pushd "$BUILD_DIR"
 
 echo "Extracting OpenSSL $SSL_VERSION"
-# rm -fr "openssl-$SSL_VERSION"
-# tar xf "$ROOTDIR/openssl-$SSL_VERSION.tar.gz"
+rm -fr "openssl-$SSL_VERSION"
+tar xf "$ROOTDIR/openssl-$SSL_VERSION.tar.gz"
 
-# mv "openssl-$SSL_VERSION" "openssl-$SSL_VERSION-$ARCH"
+mv "openssl-$SSL_VERSION" "openssl-$SSL_VERSION-$ARCH"
 pushd "openssl-$SSL_VERSION-$ARCH"
 
 log_file="build_${ARCH}_${SSL_VERSION}.log"
-# configure_ssl ${log_file}
+configure_ssl ${log_file}
 
 # Delete existing build artifacts
 rm -fr "$OUT_DIR"
 mkdir -p "$OUT_DIR" || exit 1
 
-# build_ssl ${log_file}
+build_ssl ${log_file}
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then
