@@ -22,7 +22,7 @@ configure_ssl() {
             ;;
     esac
 
-    config_params=( "${BUILD_TYPE}" "no-shared" "$TARGET" "no-makedepend" "--release")
+    config_params=( "${BUILD_TYPE}" "shared" "$TARGET" "no-makedepend" "--release")
 
     echo "Configuring OpenSSL $SSL_VERSION"
     echo "Configure parameters: ${config_params[@]}"
@@ -38,27 +38,27 @@ build_ssl() {
 
     echo "Building..."
     export CL=" /MP"
+
+    # hacky crap caused by git bash
+    TOOLSDIR=`cygpath -u "$VCToolsInstallDir"`
+    export PATH="$TOOLSDIR/bin/Host${VSCMD_ARG_HOST_ARCH}/${VSCMD_ARG_TGT_ARCH}/:$PATH"
     nmake build_libs 2>&1 1>>${log_file} \
         | tee -a ${log_file} || exit 1
-}
-
-strip_libs() {
-    find . -name "libcrypto*.dll" -exec llvm-strip --strip-all {} \;
-    find . -name "libssl*.dll" -exec llvm-strip --strip-all {} \;
-    find . -name "libcrypto*.lib" -exec llvm-strip --strip-all {} \;
-    find . -name "libssl*.lib" -exec llvm-strip --strip-all {} \;
 }
 
 copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
 
-    cp lib{ssl,crypto}.{dll,lib} "$OUT_DIR/lib" || exit 1
+    # mv libssl-*.dll libssl.dll
+    # mv libcrypto-*.dll libcrypto.dll
+
+    cp lib{ssl,crypto}*.{dll,lib} "$OUT_DIR/lib" || exit 1
 }
 
 copy_cmake() {
     cp $ROOTDIR/CMakeLists.txt "$OUT_DIR"
-    cat $ROOTDIR/windows/suffixes.cmake $ROOTDIR/libs.cmake > "$OUT_DIR/openssl.cmake"
+    cp $ROOTDIR/windows/openssl.cmake "$OUT_DIR"
 }
 
 package() {
@@ -81,26 +81,25 @@ ROOTDIR=$PWD
 
 ./tools/download-openssl.sh
 
-[[ -e "$BUILD_DIR" ]] && rm -fr "$BUILD_DIR"
+# [[ -e "$BUILD_DIR" ]] && rm -fr "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 pushd "$BUILD_DIR"
 
 echo "Extracting OpenSSL $SSL_VERSION"
-rm -fr "openssl-$SSL_VERSION"
-tar xf "$ROOTDIR/openssl-$SSL_VERSION.tar.gz"
+# rm -fr "openssl-$SSL_VERSION"
+# tar xf "$ROOTDIR/openssl-$SSL_VERSION.tar.gz"
 
-mv "openssl-$SSL_VERSION" "openssl-$SSL_VERSION-$ARCH"
+# mv "openssl-$SSL_VERSION" "openssl-$SSL_VERSION-$ARCH"
 pushd "openssl-$SSL_VERSION-$ARCH"
 
 log_file="build_${ARCH}_${SSL_VERSION}.log"
-configure_ssl ${log_file}
+# configure_ssl ${log_file}
 
 # Delete existing build artifacts
 rm -fr "$OUT_DIR"
 mkdir -p "$OUT_DIR" || exit 1
 
-build_ssl ${log_file}
-strip_libs
+# build_ssl ${log_file}
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then
