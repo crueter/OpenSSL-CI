@@ -61,7 +61,7 @@ Android builds both shared and static libraries by default. You can control this
 
 Windows building is only tested on MSVC and on Windows only. MSYS2 and MinGW support is planned. Only amd64 is officially supported or distributed for the time being.
 
-Windows only builds static libraries, and will always be linked as such.
+Windows builds both shared and static libraries by default. You can control this with the `BUILD_SHARED_LIBS` CMake variable.
 
 ### Unix
 

@@ -12,17 +12,19 @@ set -e
 configure_ssl() {
     log_file=$1
 
-    # TODO(crueter): win32/win64 split for amd64
     case "$ARCH" in
-        (amd64|x86|x64|x86_64)
+        (x86)
             TARGET="VC-WIN32"
+            ;;
+        (amd64|x64|x86_64)
+            TARGET="VC-WIN64A"
             ;;
         (aarch64|arm|arm64)
             TARGET="VC-WIN64-ARM"
             ;;
     esac
 
-    config_params=( "${BUILD_TYPE}" "no-shared" "$TARGET" "no-makedepend" "--release")
+    config_params=( "${BUILD_TYPE}" "shared" "$TARGET" "no-makedepend" "--release")
 
     echo "Configuring OpenSSL $SSL_VERSION"
     echo "Configure parameters: ${config_params[@]}"
@@ -38,20 +40,23 @@ build_ssl() {
 
     echo "Building..."
     export CL=" /MP"
-    nmake SHLIB_VERSION_NUMBER= build_libs 2>&1 1>>${log_file} \
-        | tee -a ${log_file} || exit 1
-}
 
-strip_libs() {
-    find . -name "libcrypto*.dll" -exec llvm-strip --strip-all {} \;
-    find . -name "libssl*.dll" -exec llvm-strip --strip-all {} \;
+    # hacky crap caused by git bash
+    TOOLSDIR=`cygpath -u "$VCToolsInstallDir"`
+    echo $TOOLSDIR
+    export PATH="$TOOLSDIR/bin/Host${VSCMD_ARG_HOST_ARCH}/${VSCMD_ARG_TGT_ARCH}/:$PATH"
+    nmake build_libs 2>&1 1>>${log_file} \
+        | tee -a ${log_file} || (cat $log_file && exit 1)
 }
 
 copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
 
-    cp lib{ssl,crypto}.lib "$OUT_DIR/lib" || exit 1
+    mv libssl-*.dll libssl.dll
+    mv libcrypto-*.dll libcrypto.dll
+
+    cp lib{ssl,crypto}*.{dll,lib} "$OUT_DIR/lib" || exit 1
 }
 
 copy_cmake() {
@@ -98,7 +103,6 @@ rm -fr "$OUT_DIR"
 mkdir -p "$OUT_DIR" || exit 1
 
 build_ssl ${log_file}
-strip_libs
 copy_build_artifacts
 
 if [ ! -d "$OUT_DIR/include" ]; then
