@@ -11,10 +11,6 @@ set -e
 [ -z "$ANDROID_API" ] && ANDROID_API=23
 [ -z "$BUILD_TYPE" ] && BUILD_TYPE=no-asm
 
-get_qt_arch() {
-    echo "arm64-v8a"
-}
-
 configure_ssl() {
     log_file=$1
 

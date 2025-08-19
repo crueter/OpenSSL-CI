@@ -18,13 +18,26 @@ jobs:
   windows:
     needs: [version]
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: windows-latest
+            arch: amd64
+
+          - runs-on: windows-11-arm
+            arch: arm64
+
     env:
       SSL_VERSION: ${{ needs.version.outputs.ssl_version }}
+      ARCH: ${{ matrix.arch }}
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
 
       - name: Install wget
         run: choco install wget
@@ -54,7 +67,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows
+          name: windows-${{ matrix.arch }}
           path: artifacts/*
 
   android:

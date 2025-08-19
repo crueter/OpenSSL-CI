@@ -42,7 +42,7 @@ jobs:
           name: OpenSSL ${{ env.SSL_VERSION }}
           tag_name: v${{ env.SSL_VERSION }}
           files: |
-            windows/*.tar.zst*
+            windows-*/*.tar.zst*
             android/*.tar.zst*
             solaris/*.tar.zst*
             freebsd/*.tar.zst*

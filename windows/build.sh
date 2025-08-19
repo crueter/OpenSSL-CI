@@ -9,15 +9,20 @@ set -e
 [ -z "$BUILD_DIR" ] && BUILD_DIR=build
 [ -z "$BUILD_TYPE" ] && BUILD_TYPE=no-asm
 
-get_qt_arch() {
-    echo "arm64-v8a"
-}
-
 configure_ssl() {
     log_file=$1
 
-    # TODO(crueter): arm
-    config_params=( "${BUILD_TYPE}" "no-shared" "VC-WIN32" "no-makedepend" "--release")
+    # TODO(crueter): win32/win64 split for amd64
+    case "$ARCH" in
+        (amd64|x86|x64|x86_64)
+            TARGET="VC-WIN32"
+            ;;
+        (aarch64|arm|arm64)
+            TARGET="VC-WIN64-ARM"
+            ;;
+    esac
+
+    config_params=( "${BUILD_TYPE}" "shared" "$TARGET" "no-makedepend" "--release")
 
     echo "Configuring OpenSSL $SSL_VERSION"
     echo "Configure parameters: ${config_params[@]}"
@@ -41,7 +46,7 @@ copy_build_artifacts() {
     echo "Copying artifacts..."
     mkdir -p $OUT_DIR/lib
 
-    cp lib{ssl,crypto}.lib "$OUT_DIR/lib" || exit 1
+    cp lib{ssl,crypto}.{dll,lib} "$OUT_DIR/lib" || exit 1
 }
 
 copy_cmake() {

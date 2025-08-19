@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 [ -z "$OUT_DIR" ] && OUT_DIR=$PWD/out
 
 [ -z "$SSL_VERSION" ] && SSL_VERSION=3.5.2
@@ -11,10 +9,6 @@ set -x
 [ -z "$PLATFORM" ] && PLATFORM=linux
 
 [ "$PLATFORM" == "solaris" ] && MAKE=gmake || MAKE=make
-
-get_qt_arch() {
-    echo "arm64-v8a"
-}
 
 configure_ssl() {
     log_file=$1
@@ -35,7 +29,6 @@ build_ssl() {
     log_file=$1
 
     echo "Building..."
-    export CL=" /MP"
     $MAKE SHLIB_VERSION_NUMBER= build_libs -j$(nproc) 2>&1 1>>${log_file} \
         | tee -a ${log_file} || exit 1
 }
