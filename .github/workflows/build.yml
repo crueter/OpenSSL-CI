@@ -152,7 +152,7 @@ jobs:
           usesh: true
           envs: 'PLATFORM ARCH SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
-            pkg install -y wget perl5.40 bash
+            pkg install -y wget perl5 bash
 
           run: |
             ls unix
