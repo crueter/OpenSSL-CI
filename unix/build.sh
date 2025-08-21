@@ -9,6 +9,7 @@
 [ -z "$PLATFORM" ] && PLATFORM=linux
 
 [ "$PLATFORM" == "solaris" ] && MAKE=gmake || MAKE=make
+[ "$ARCH" != "amd64" ] && PLATFORM=$PLATFORM-$ARCH
 
 configure_ssl() {
     log_file=$1

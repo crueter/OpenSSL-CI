@@ -97,18 +97,33 @@ jobs:
 
   unix:
     needs: [version]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: solaris
+            runs-on: ubuntu-latest
+            arch: amd64
+            vm-arch: x86_64
+
           - platform: freebsd
+            runs-on: ubuntu-latest
+            arch: amd64
+            vm-arch: x86_64
+
           - platform: linux
+            runs-on: ubuntu-latest
+            arch: amd64
+
+          - platform: linux
+            runs-on: ubuntu-24.04-arm
+            arch: aarch64
 
     env:
       PLATFORM: ${{ matrix.platform }}
       SSL_VERSION: ${{ needs.version.outputs.ssl_version }}
+      ARCH: ${{ matrix.arch }}
 
     steps:
       - uses: actions/checkout@v4
@@ -117,9 +132,10 @@ jobs:
         if: matrix.platform == 'solaris'
         uses: vmactions/solaris-vm@v1.1.4
         with:
+          arch: ${{ matrix.vm-arch }}
           release: "11.4-gcc"
           usesh: true
-          envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
+          envs: 'PLATFORM ARCH SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
             pkgutil -y -i perl wget
             pkgutil -U -y tar
@@ -132,8 +148,9 @@ jobs:
         if: matrix.platform == 'freebsd'
         uses: vmactions/freebsd-vm@v1.2.2
         with:
+          arch: ${{ matrix.vm-arch }}
           usesh: true
-          envs: 'PLATFORM SSL_VERSION GITHUB_WORKSPACE'
+          envs: 'PLATFORM ARCH SSL_VERSION GITHUB_WORKSPACE'
           prepare: |
             pkg install -y wget perl5-5.40.2_2 bash
 
@@ -151,5 +168,5 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}
+          name: ${{ matrix.platform }}-${{ matrix.arch }}
           path: artifacts/*

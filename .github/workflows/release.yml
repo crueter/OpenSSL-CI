@@ -48,8 +48,8 @@ jobs:
           files: |
             windows-*/*.tar.zst*
             android/*.tar.zst*
-            solaris/*.tar.zst*
-            freebsd/*.tar.zst*
-            linux/*.tar.zst*
+            solaris-*/*.tar.zst*
+            freebsd-*/*.tar.zst*
+            linux-*/*.tar.zst*
 
           make_latest: true
