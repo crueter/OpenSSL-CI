@@ -44,7 +44,7 @@ Build scripts are located at `build.sh` in their relevant directory, e.g. `andro
 - `BUILD_TYPE` (default `no-asm`): OpenSSL build type. Usually you can keep this as-is
 - `BUILD_DIR` (default `<PWD>/build`): The build directory to use
 - `OUT_DIR` (default `<PWD>/out`): The directory to output the include directory and built libraries
-- `ARCH` (default: amd64 on Windows, arm64 on Android): The architecture to build for
+- `ARCH` (default: amd64 on Windows/UNIX, arm64 on Android): The architecture to build for
 
 ### Android
 
@@ -68,3 +68,5 @@ Windows builds both shared and static libraries by default. You can control this
 Unix builds are tested on Linux, FreeBSD, and Solaris (gcc64), and should "just work" out of the box. To change your platform (only affects the artifact name), set the `PLATFORM` environment variable.
 
 Unix builds both shared and static libraries by default. You can control this with the `BUILD_SHARED_LIBS` CMake variable.
+
+Currently, only Linux supports aarch64 builds, though FreeBSD should work in theory.
